@@ -21,7 +21,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
 class ProductDeleteView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -31,4 +31,4 @@ class ProductDeleteView(generics.DestroyAPIView):
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]  # Allow anyone to create a user
+    permission_classes = [AllowAny]  
