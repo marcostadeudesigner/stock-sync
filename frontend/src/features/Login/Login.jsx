@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LoginFrom } from './LoginFrom';
+import { LoginRegisterForm } from '@shared/components/LoginRegisterForm';
 import { Typography } from '@mui/material';
 
 function Login() {
@@ -9,7 +9,7 @@ function Login() {
       <Typography variant="h4" align="center" gutterBottom>
         Welcome to the Login Page
       </Typography>
-      <LoginFrom />
+      <LoginRegisterForm route="/token/" method="login" />
     </>
   )
   

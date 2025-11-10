@@ -1,7 +1,6 @@
+import { LoginRegisterForm } from "@shared/components/LoginRegisterForm"
 function Register() {
-  return (
-    <div>Register Page</div>
-  )
+  return<LoginRegisterForm route="/api/user/register" method="register"/>
 }
 
 export  { Register }

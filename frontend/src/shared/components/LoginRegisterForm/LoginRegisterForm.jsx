@@ -14,28 +14,63 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-function LoginFrom({route,method}) {
+function LoginRegisterForm({ route, method }) {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const nameForm = method === 'login' ? 'Login' : 'Novo Usuário';
   const navigate = useNavigate();
+  
+  const isFormValid = formData.username.trim() !== '' && formData.password.trim() !== '';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value // fixed: use `name` instead of undefined `username`
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your login logic here
-    console.log('Login data:', formData);
+    setLoading(true);
+
+    // normalize route to ensure it starts and ends with a slash
+    const endpointBase = route?.startsWith('/') ? route : `/${route || ''}`;
+    const endpoint = endpointBase.endsWith('/') ? endpointBase : `${endpointBase}/`;
+
+    try {
+      const response = await api.post(endpoint, { ...formData });
+
+      // debug logging
+      console.log('Login response status:', response.status);
+      console.log('Login response data:', response.data);
+
+      // only proceed when we have tokens
+      if (response.status >= 200 && response.status < 300 && response.data?.access) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, response.data.access);
+        if (response.data.refresh) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, response.data.refresh);
+        }
+        navigate('/');
+        return;
+      }
+
+      // if no tokens, show a helpful error
+      console.error('Login did not return access token', response.data);
+    } catch (error) {
+      // log detailed error for debugging
+      if (error.response) {
+        console.error('Login error response:', error.response.status, error.response.data);
+      } else {
+        console.error('Login request failed:', error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,19 +85,19 @@ function LoginFrom({route,method}) {
       >
         <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
           <Typography component="h1" variant="h5" align="center" gutterBottom>
-            { nameForm }
+            {nameForm}
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
               fullWidth
-              id="name"
+              id="username"
               label="Nome"
-              name="name"
+              name="username"
               autoComplete="name"
               autoFocus
-              value={formData.name}
+              value={formData.username}
               onChange={handleChange}
             />
             <TextField
@@ -95,8 +130,9 @@ function LoginFrom({route,method}) {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={!isFormValid || loading}
             >
-              Entrar
+              {loading ? 'Loading...' : nameForm}
             </Button>
           </Box>
         </Paper>
@@ -105,4 +141,4 @@ function LoginFrom({route,method}) {
   );
 }
 
-export { LoginFrom };
+export { LoginRegisterForm };
