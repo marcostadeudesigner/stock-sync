@@ -1,44 +1,37 @@
 import { useState, useEffect } from "react";
-import { api } from "@shared/api";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Grid, Alert } from "@mui/material";
 import { ProductCreate } from "./ProductCreate";
 import { ProductList } from "./ProductList";
 import { ProductEditDialog } from "./ProductEditDialog";
+import {
+  fetchProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  selectProducts,
+  selectProductsLoading,
+  selectProductsError,
+} from "./productsSlice";
 
 function Products() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const products = useSelector(selectProducts);
+  const loading = useSelector(selectProductsLoading);
+  const error = useSelector(selectProductsError);
+
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  useEffect(() => { getProducts(); }, []);
-
-  const getProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get("/products/");
-      setProducts(res.data);
-      setError("");
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao carregar produtos");
-    } finally { setLoading(false); }
-  };
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const createProduct = async (payload) => {
-    setLoading(true);
-    try {
-      await api.post("/products/", payload);
-      await getProducts();
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao criar produto");
-    } finally { setLoading(false); }
+    await dispatch(addProduct(payload)).unwrap();
   };
 
   const openEdit = (product) => {
-    // keep an editable copy
     setEditing({ ...product });
     setEditOpen(true);
   };
@@ -48,30 +41,18 @@ function Products() {
       setEditing(data);
       return;
     }
-    // action === "save"
-    setLoading(true);
+
     try {
-      await api.put(`/products/${data.id}/`, { product: data.product, price: data.price });
-      await getProducts();
+      await dispatch(updateProduct({ id: data.id, data: { product: data.product, price: data.price } })).unwrap();
       setEditOpen(false);
       setEditing(null);
-      setError("");
     } catch (err) {
-      console.error(err);
-      setError("Erro ao atualizar produto");
-    } finally { setLoading(false); }
+      console.error("Failed to update product:", err);
+    }
   };
 
   const handleDelete = async (id) => {
-    setLoading(true);
-    try {
-      await api.delete(`/products/${id}/`);
-      await getProducts();
-      setError("");
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao deletar produto");
-    } finally { setLoading(false); }
+    await dispatch(deleteProduct(id));
   };
 
   return (
