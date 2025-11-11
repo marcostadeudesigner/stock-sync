@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Grid, Alert } from "@mui/material";
+import { Container, Grid, Alert, Box } from "@mui/material";
 import { ProductCreate } from "./ProductCreate";
 import { ProductList } from "./ProductList";
 import { ProductEditDialog } from "./ProductEditDialog";
@@ -56,14 +56,23 @@ function Products() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, height: '100vh' }}>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={5}>
-          <ProductCreate onCreate={createProduct} loading={loading} />
+      <Grid container spacing={3} sx={{ height: '100%' }}>
+        <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ height: '100%' }}>
+            <ProductCreate onCreate={createProduct} loading={loading} />
+          </Box>
         </Grid>
-        <Grid item xs={12} md={7}>
-          <ProductList products={products} loading={loading} onEdit={openEdit} onDelete={handleDelete} />
+        <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ height: '100%' }}>
+            <ProductList 
+              products={products} 
+              loading={loading} 
+              onEdit={openEdit} 
+              onDelete={handleDelete} 
+            />
+          </Box>
         </Grid>
       </Grid>
 
