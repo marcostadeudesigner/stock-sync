@@ -1,3 +1,4 @@
+// ProductList.jsx
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Button, Typography, Paper, Box, Tooltip
@@ -5,6 +6,7 @@ import {
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { AutoSizer, Column, Table as VirtualizedTable } from 'react-virtualized';
 import 'react-virtualized/styles.css';
+import { useProductList } from './useProductList';
 
 // Styles for consistent cell appearance
 const cellStyle = {
@@ -21,7 +23,14 @@ const headerCellStyle = {
 };
 
 function ProductList({ products, loading, onEdit, onDelete }) {
-  if (products.length === 0) {
+  const {
+    isEmpty,
+    formatPrice,
+    handleEdit,
+    handleDelete
+  } = useProductList(products, loading, onEdit, onDelete);
+
+  if (isEmpty) {
     return (
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
@@ -85,7 +94,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                 )}
                 cellRenderer={({ cellData }) => (
                   <TableCell component="div" variant="body" align="right" style={cellStyle}>
-                    R$ {parseFloat(cellData).toFixed(2)}
+                    {formatPrice(cellData)}
                   </TableCell>
                 )}
               />
@@ -105,7 +114,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                         variant="outlined"
                         color="primary"
                         size="small"
-                        onClick={() => onEdit(rowData)}
+                        onClick={() => handleEdit(rowData)}
                         disabled={loading}
                         sx={{ 
                           mr: 1, 
@@ -123,7 +132,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                         variant="outlined"
                         color="error"
                         size="small"
-                        onClick={() => onDelete(rowData.id)}
+                        onClick={() => handleDelete(rowData.id)}
                         disabled={loading}
                         sx={{ 
                           minWidth: 'auto',

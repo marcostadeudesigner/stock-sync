@@ -1,44 +1,19 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, Typography, CircularProgress, Box, Grid, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart as ShoppingCartIcon } from "@mui/icons-material";
-import { api } from "@shared/api";
+import { useDashboard } from "./useDashboard";
 
 function Dashboard() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const {
+    loading,
+    error,
+    totalItems,
+    totalValue,
+    formatCurrency
+  } = useDashboard();
 
-  useEffect(() => {
-    let mounted = true;
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get("/products/");
-        if (mounted) {
-          setProducts(res.data || []);
-          setError("");
-        }
-      } catch (err) {
-        console.error(err);
-        if (mounted) setError("Erro ao carregar produtos");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-    fetch();
-    return () => { mounted = false; };
-  }, []);
-
-  const totalItems = products.length;
-  const totalValue = products.reduce((sum, p) => {
-    const v = parseFloat(p.price);
-    return sum + (isNaN(v) ? 0 : v);
-  }, 0);
-
-  const fmt = (v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
-
+  // Componente de loading
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
@@ -49,9 +24,9 @@ function Dashboard() {
 
   return (
     <Box sx={{ px: 2, py: 4 }}>
-      {error ? (
+      {error && (
         <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>
-      ) : null}
+      )}
 
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={4}>
@@ -92,7 +67,7 @@ function Dashboard() {
                     Valor total
                   </Typography>
                   <Typography variant="h5" sx={{ mt: 1 }}>
-                    {fmt(totalValue)}
+                    {formatCurrency(totalValue)}
                   </Typography>
                 </Grid>
 
