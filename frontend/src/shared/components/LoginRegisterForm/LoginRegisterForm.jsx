@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { api } from "@shared/api";
-import { useNavigate } from 'react-router-dom';
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@shared/constants/authConstants';
+// LoginRegisterForm.jsx
 import { 
   Box, 
   Container, 
@@ -13,65 +10,19 @@ import {
   InputAdornment
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useLoginRegister } from './useLoginRegister';
 
 function LoginRegisterForm({ route, method }) {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const nameForm = method === 'login' ? 'Login' : 'Novo Usuário';
-  const navigate = useNavigate();
-  
-  const isFormValid = formData.username.trim() !== '' && formData.password.trim() !== '';
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value // fixed: use `name` instead of undefined `username`
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // normalize route to ensure it starts and ends with a slash
-    const endpointBase = route?.startsWith('/') ? route : `/${route || ''}`;
-    const endpoint = endpointBase.endsWith('/') ? endpointBase : `${endpointBase}/`;
-
-    try {
-      const response = await api.post(endpoint, { ...formData });
-
-      // debug logging
-      console.log('Login response status:', response.status);
-      console.log('Login response data:', response.data);
-
-      // only proceed when we have tokens
-      if (response.status >= 200 && response.status < 300 && response.data?.access) {
-        localStorage.setItem(ACCESS_TOKEN_KEY, response.data.access);
-        if (response.data.refresh) {
-          localStorage.setItem(REFRESH_TOKEN_KEY, response.data.refresh);
-        }
-        navigate('/');
-        return;
-      }
-
-      // if no tokens, show a helpful error
-      console.error('Login did not return access token', response.data);
-    } catch (error) {
-      // log detailed error for debugging
-      if (error.response) {
-        console.error('Login error response:', error.response.status, error.response.data);
-      } else {
-        console.error('Login request failed:', error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    formData,
+    showPassword,
+    loading,
+    isFormValid,
+    formName,
+    handleChange,
+    handleSubmit,
+    togglePasswordVisibility,
+  } = useLoginRegister(route, method);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -85,7 +36,7 @@ function LoginRegisterForm({ route, method }) {
       >
         <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
           <Typography component="h1" variant="h5" align="center" gutterBottom>
-            {nameForm}
+            {formName}
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
@@ -116,7 +67,7 @@ function LoginRegisterForm({ route, method }) {
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={togglePasswordVisibility}
                       edge="end"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -132,7 +83,7 @@ function LoginRegisterForm({ route, method }) {
               sx={{ mt: 3, mb: 2 }}
               disabled={!isFormValid || loading}
             >
-              {loading ? 'Loading...' : nameForm}
+              {loading ? 'Loading...' : formName}
             </Button>
           </Box>
         </Paper>

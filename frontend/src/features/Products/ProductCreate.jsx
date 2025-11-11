@@ -1,28 +1,15 @@
-import { useState } from "react";
 import { Box, TextField, Button, Paper, Typography, Alert } from "@mui/material";
+import { useProductCreate } from "./useProductCreate";
 
 function ProductCreate({ onCreate, loading }) {
-  const [form, setForm] = useState({ product: "", price: "" });
-  const [error, setError] = useState("");
-
-  const handleChange = (e) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    if (error) setError("");
-  };
-
-  const isValid = () => {
-    return form.product.trim() !== "" && form.price.trim() !== "" && !isNaN(parseFloat(form.price)) && parseFloat(form.price) > 0;
-  };
-
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!isValid()) {
-      setError("Preencha nome e preço (preço > 0).");
-      return;
-    }
-    await onCreate(form);
-    setForm({ product: "", price: "" });
-  };
+  const {
+    form,
+    error,
+    handleChange,
+    submit,
+    isValid,
+    loading: submitLoading
+  } = useProductCreate(onCreate, loading);
 
   return (
     <Paper elevation={3} sx={{ p: 3 }}>
@@ -56,9 +43,9 @@ function ProductCreate({ onCreate, loading }) {
           fullWidth
           variant="contained"
           sx={{ mt: 2 }}
-          disabled={!isValid() || loading}
+          disabled={!isValid || submitLoading}
         >
-          {loading ? "Criando..." : "Criar Produto"}
+          {submitLoading ? "Criando..." : "Criar Produto"}
         </Button>
       </Box>
     </Paper>

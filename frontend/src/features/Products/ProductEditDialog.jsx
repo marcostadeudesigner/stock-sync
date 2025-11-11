@@ -1,6 +1,14 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
+import { useProductEdit } from "./useProductEdit";
 
 function ProductEditDialog({ open, product, onClose, onSave, loading }) {
+  const {
+    isValid,
+    handleChange,
+    handleSave,
+    loading: saveLoading
+  } = useProductEdit(product, onSave, loading);
+
   if (!product) return null;
 
   return (
@@ -12,7 +20,7 @@ function ProductEditDialog({ open, product, onClose, onSave, loading }) {
           label="Nome do Produto"
           name="product"
           value={product.product}
-          onChange={(e) => onSave("change", { ...product, product: e.target.value })}
+          onChange={(e) => handleChange("product", e.target.value)}
           margin="normal"
           required
         />
@@ -23,7 +31,7 @@ function ProductEditDialog({ open, product, onClose, onSave, loading }) {
           type="number"
           inputProps={{ step: "0.01", min: "0" }}
           value={product.price}
-          onChange={(e) => onSave("change", { ...product, price: e.target.value })}
+          onChange={(e) => handleChange("price", e.target.value)}
           margin="normal"
           required
         />
@@ -31,12 +39,12 @@ function ProductEditDialog({ open, product, onClose, onSave, loading }) {
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
-          onClick={() => onSave("save", product)}
+          onClick={handleSave}
           color="primary"
           variant="contained"
-          disabled={loading || !product.product.trim() || product.price === "" || isNaN(parseFloat(product.price)) || parseFloat(product.price) <= 0}
+          disabled={saveLoading || !isValid}
         >
-          {loading ? "Atualizando..." : "Salvar"}
+          {saveLoading ? "Atualizando..." : "Salvar"}
         </Button>
       </DialogActions>
     </Dialog>
