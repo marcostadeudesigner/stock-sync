@@ -3,11 +3,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
+import productsReducer from "../productsSlice";
 import * as apiModule from "@shared/api";
 import { Products } from "../Products";
-import productsReducer from "../productsSlice"; // Import your products slice reducer
 
-// Mock the API module
 jest.mock("@shared/api", () => ({
   api: {
     get: jest.fn(),
@@ -22,33 +21,18 @@ const mockedProducts = [
   { id: 2, product: "Y", price: "2.00" },
 ];
 
-// Create a mock store
-const createMockStore = (initialState = {}) => {
-  return configureStore({
-    reducer: {
-      products: productsReducer,
-    },
-    preloadedState: initialState,
-  });
-};
-
 describe("Products (integration)", () => {
   let store;
 
   beforeEach(() => {
-    // Initialize store with mock state
-    store = createMockStore({
-      products: {
-        items: [],
-        loading: false,
-        error: null,
-      },
+    // create an isolated test store for each test
+    store = configureStore({
+      reducer: { products: productsReducer },
     });
 
-    // Mock API responses
     apiModule.api.get.mockResolvedValue({ data: mockedProducts });
-    apiModule.api.post.mockResolvedValue({ status: 201 });
-    apiModule.api.put.mockResolvedValue({ status: 200 });
+    apiModule.api.post.mockResolvedValue({ status: 201, data: mockedProducts[0] });
+    apiModule.api.put.mockResolvedValue({ status: 200, data: mockedProducts[0] });
     apiModule.api.delete.mockResolvedValue({ status: 204 });
   });
 
@@ -58,24 +42,22 @@ describe("Products (integration)", () => {
 
   test("fetches and shows products, opens edit dialog", async () => {
     const user = userEvent.setup();
-    
-    // Wrap your component with Redux Provider
     render(
       <Provider store={store}>
         <Products />
       </Provider>
     );
 
-    // Wait for products to be shown
+    // wait for products to be fetched
     await waitFor(() => expect(apiModule.api.get).toHaveBeenCalledWith("/products/"));
     expect(await screen.findByText(/X/)).toBeInTheDocument();
     expect(await screen.findByText(/Y/)).toBeInTheDocument();
 
-    // Open edit dialog for first product
+    // open edit dialog for first product
     const editButtons = screen.getAllByRole("button", { name: /Editar/i });
     await user.click(editButtons[0]);
 
-    // Dialog should open with Save button
+    // dialog should open with Save button
     expect(await screen.findByRole("button", { name: /Salvar/i })).toBeInTheDocument();
   });
 });
