@@ -2,6 +2,7 @@ import { Card, CardContent, Typography, CircularProgress, Box, Grid, Button } fr
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart as ShoppingCartIcon } from "@mui/icons-material";
 import { useDashboard } from "./useDashboard";
+import { Header } from "@shared/components/Header";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -16,20 +17,28 @@ function Dashboard() {
   // Componente de loading
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ px: 2, py: 4 }}>
+    <>
+    <Header />
+    <Box sx={{ 
+      px: 2, 
+      py: 4,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "80vh"
+    }}>
       {error && (
-        <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>
+        <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>{error}</Typography>
       )}
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={4}>
+      <Grid container justifyContent="center">
+        <Grid item xs={12} sm={8} md={6} lg={4}>
           <Card 
             variant="outlined" 
             sx={{ 
@@ -45,7 +54,7 @@ function Dashboard() {
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
                     <ShoppingCartIcon />
                     <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
                       Resumo do Estoque
@@ -54,19 +63,19 @@ function Dashboard() {
                 </Grid>
                 
                 <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography variant="subtitle2" color="textSecondary" align="center">
                     Total de itens
                   </Typography>
-                  <Typography variant="h4" sx={{ mt: 1 }}>
+                  <Typography variant="h4" sx={{ mt: 1 }} align="center">
                     {totalItems}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={6}>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography variant="subtitle2" color="textSecondary" align="center">
                     Valor total
                   </Typography>
-                  <Typography variant="h5" sx={{ mt: 1 }}>
+                  <Typography variant="h5" sx={{ mt: 1 }} align="center">
                     {formatCurrency(totalValue)}
                   </Typography>
                 </Grid>
@@ -87,6 +96,7 @@ function Dashboard() {
         </Grid>
       </Grid>
     </Box>
+    </>
   );
 }
 

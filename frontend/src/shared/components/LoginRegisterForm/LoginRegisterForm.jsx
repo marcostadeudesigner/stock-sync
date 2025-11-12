@@ -34,7 +34,7 @@ function LoginRegisterForm({ route, method }) {
           alignItems: 'center',
         }}
       >
-        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+        <Paper elevation={0} sx={{ padding: 4, width: '80%' }}>
           <Typography component="h1" variant="h5" align="center" gutterBottom>
             {formName}
           </Typography>
