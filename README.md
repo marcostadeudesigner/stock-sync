@@ -1,21 +1,3 @@
-# Full Stack Application
-
-A modern web application built with React frontend and Django backend.
-
-# 🚀 Tech Stack
-
-**Frontend:** React 18 • Vite • Material-UI • Redux Toolkit • React Router • Axios
-
-**Backend:** Django • Django REST Framework • SQLite • JWT Authentication
-
-# 📦 Quick Start
-
-### Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
 ## Stock Sync 
 
 A full-stack web application built with React frontend and Django backend.
@@ -193,6 +175,38 @@ AWS Elastic Beanstalk
 DigitalOcean App Platform
 
 PythonAnywhere
+
+## Sentry
+Recommended Process:
+
+Detection: Sentry alerts notify the team
+
+Triage: Classify by severity and impact
+
+Investigation: Use Sentry's rich context for debugging
+
+Resolution: Implement and deploy the fix
+
+Post-mortem: Analyze root causes and prevent recurrence
+
+This configuration provides a robust monitoring system that not only detects errors but also provides sufficient context for rapid debugging and proactive problem prevention.
+
+# Explanation of the Cache Strategy
+Unique Cache Key per User:
+The key products_{user_id} ensures that each user has their own isolated cache, preventing data leakage between users.
+
+Expiration Time (10 minutes):
+Cached data is automatically removed after 600 seconds, ensuring that updates eventually propagate.
+
+Active Invalidation:
+Whenever a product is created, updated, or deleted, the cache corresponding to the user is invalidated, forcing a new database lookup on the next request.
+
+## Expected Result
+Load Reduction:
+Repeated GET requests to the /api/products endpoint will be served directly from the cache, reducing the load on the database.
+
+Data Consistency:
+The cache is invalidated immediately after changes, ensuring that users always see up-to-date data.
 
 # 🤝 Contributing
 Fork the repository
