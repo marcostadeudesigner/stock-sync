@@ -40,9 +40,6 @@ export function useLoginRegister(route, method) {
     try {
       const response = await api.post(endpoint, { ...formData });
 
-      // Debug logging
-      console.log('Login response status:', response.status);
-      console.log('Login response data:', response.data);
 
       // Only proceed when we have tokens
       if (response.status >= 200 && response.status < 300 && response.data?.access) {
@@ -54,9 +51,15 @@ export function useLoginRegister(route, method) {
         return;
       }
 
+       // Only proceed when is a new user registration
+      if(response.status == 201) {
+         navigate('/login');
+      }
+
       // If no tokens, show a helpful error
       console.error('Login did not return access token', response.data);
     } catch (error) {
+      
       // Log detailed error for debugging
       if (error.response) {
         console.error('Login error response:', error.response.status, error.response.data);

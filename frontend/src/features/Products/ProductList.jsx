@@ -1,38 +1,18 @@
-// ProductList.jsx
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+   TableCell, TableRow,
   Button, Typography, Paper, Box, Tooltip
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { AutoSizer, Column, Table as VirtualizedTable } from 'react-virtualized';
 import 'react-virtualized/styles.css';
-import { useProductList } from './useProductList';
+import { cellStyle, headerCellStyle } from "./productsConstants";
 
-// Styles for consistent cell appearance
-const cellStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  flex: 1,
-  borderBottom: '1px solid rgba(224, 224, 224, 1)',
-  boxSizing: 'border-box',
-};
 
-const headerCellStyle = {
-  ...cellStyle,
-  backgroundColor: '#f5f5f5',
-};
 
 function ProductList({ products, loading, onEdit, onDelete }) {
-  const {
-    isEmpty,
-    formatPrice,
-    handleEdit,
-    handleDelete
-  } = useProductList(products, loading, onEdit, onDelete);
-
-  if (isEmpty) {
+  if (products.length === 0) {
     return (
-      <Paper elevation={3} sx={{ p: 3 }}>
+      <Paper elevation={0} sx={{ p: 1 }}>
         <Typography variant="h6" gutterBottom>
           Lista de Produtos (0)
         </Typography>
@@ -44,16 +24,16 @@ function ProductList({ products, loading, onEdit, onDelete }) {
   }
 
   return (
-    <Paper elevation={3} sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Paper elevation={0} sx={{ p: 1, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h6" gutterBottom>
         Lista de Produtos ({products.length})
       </Typography>
 
-      <Box sx={{ flex: 1, minHeight: 400 }}>
+      <Box sx={{ flex: 1, minHeight: 400, overflowX: 'auto' }}>
         <AutoSizer>
           {({ width, height }) => (
             <VirtualizedTable
-              width={width}
+              width={width < 500 ? 500 : width}
               height={height}
               headerHeight={50}
               rowHeight={60}
@@ -70,7 +50,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
               <Column
                 label="Produto"
                 dataKey="product"
-                width={width * 0.5}
+                width={width < 500 ? 250 : width }
                 headerRenderer={({ label }) => (
                   <TableCell component="div" variant="head" style={headerCellStyle}>
                     <strong>{label}</strong>
@@ -86,7 +66,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
               <Column
                 label="Preço"
                 dataKey="price"
-                width={width * 0.2}
+                width={width < 500 ? 150 : width * 0.2}
                 headerRenderer={({ label }) => (
                   <TableCell component="div" variant="head" style={headerCellStyle}>
                     <strong>{label}</strong>
@@ -94,14 +74,14 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                 )}
                 cellRenderer={({ cellData }) => (
                   <TableCell component="div" variant="body" align="right" style={cellStyle}>
-                    {formatPrice(cellData)}
+                    R$ {parseFloat(cellData).toFixed(2)}
                   </TableCell>
                 )}
               />
               <Column
                 label="Ações"
                 dataKey="id"
-                width={width * 0.3}
+                width={ 500 ? 100 : width * 0.15}
                 headerRenderer={({ label }) => (
                   <TableCell component="div" variant="head" style={headerCellStyle}>
                     <strong>{label}</strong>
@@ -114,7 +94,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                         variant="outlined"
                         color="primary"
                         size="small"
-                        onClick={() => handleEdit(rowData)}
+                        onClick={() => onEdit(rowData)}
                         disabled={loading}
                         sx={{ 
                           mr: 1, 
@@ -132,7 +112,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                         variant="outlined"
                         color="error"
                         size="small"
-                        onClick={() => handleDelete(rowData.id)}
+                        onClick={() => onDelete(rowData.id)}
                         disabled={loading}
                         sx={{ 
                           minWidth: 'auto',
