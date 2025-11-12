@@ -2,13 +2,13 @@
 
 A modern web application built with React frontend and Django backend.
 
-## 🚀 Tech Stack
+# 🚀 Tech Stack
 
 **Frontend:** React 18 • Vite • Material-UI • Redux Toolkit • React Router • Axios
 
 **Backend:** Django • Django REST Framework • SQLite • JWT Authentication
 
-## 📦 Quick Start
+# 📦 Quick Start
 
 ### Frontend Setup
 ```bash
@@ -16,11 +16,11 @@ cd frontend
 npm install
 npm run dev
 ```
-# Stock Sync 
+## Stock Sync 
 
 A full-stack web application built with React frontend and Django backend.
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 ### Frontend
 React 18 - UI framework
 
@@ -62,7 +62,7 @@ ESLint - Code linting
 
 Babel - JavaScript transpilation
 
-## 📁 Project Structure
+# 📁 Project Structure
 ```text
 project/
 ├── frontend/          # React application
@@ -125,7 +125,7 @@ python manage.py runserver
 ```
 The backend API will be available at http://localhost:8000.
 
-## 📜 Available Scripts
+# 📜 Available Scripts
 # Frontend Scripts
 npm run dev - Start development server
 
@@ -150,7 +150,7 @@ python manage.py migrate - Apply migrations
 
 python manage.py createsuperuser - Create admin user
 
-## 🧪 Testing
+# 🧪 Testing
 # Frontend Testing
 ```bash
 npm test              # Run tests once
@@ -162,7 +162,7 @@ npm run test:coverage # Generate coverage report
 python manage.py test
 ```
 
-## 🔧 Configuration
+# 🔧 Configuration
 # Environment Variables
 Frontend (typically in .env file):
 
@@ -176,7 +176,7 @@ SECRET_KEY=your-secret-key
 DEBUG=True
 DATABASE_URL=postgres://user:password@localhost:5432/dbname
 
-## 📦 Deployment
+# 📦 Deployment
 # Frontend Build
 ```bash
 npm run build
@@ -194,7 +194,7 @@ DigitalOcean App Platform
 
 PythonAnywhere
 
-## 🤝 Contributing
+# 🤝 Contributing
 Fork the repository
 
 Create a feature branch
